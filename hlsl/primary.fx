@@ -105,6 +105,6 @@ technique DefaultTechnique
 		Lighting = FALSE;
 
 		VertexShader = compile vs_2_0 vs_main();
-		PixelShader  = compile ps_2_0 ps_main();
+		//PixelShader  = compile ps_2_0 ps_main();
 	}
 }

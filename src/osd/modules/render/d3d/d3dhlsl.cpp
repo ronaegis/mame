@@ -1032,6 +1032,7 @@ void shaders::begin_draw()
 
 	default_effect->set_technique("DefaultTechnique");
 	post_effect->set_technique("DefaultTechnique");
+#if 0
 	distortion_effect->set_technique("DefaultTechnique");
 	prescale_effect->set_technique("DefaultTechnique");
 	phosphor_effect->set_technique("DefaultTechnique");
@@ -1043,6 +1044,7 @@ void shaders::begin_draw()
 	bloom_effect->set_technique("DefaultTechnique");
 	downsample_effect->set_technique("DefaultTechnique");
 	vector_effect->set_technique("DefaultTechnique");
+#endif
 
 	HRESULT result = (*d3dintf->device.get_render_target)(d3d->get_device(), 0, &backbuffer);
 	if (result != D3D_OK)
@@ -1412,7 +1414,8 @@ int shaders::post_pass(d3d_render_target *rt, int source_index, poly_info *poly,
 	curr_effect->update_uniforms();
 	curr_effect->set_texture("ShadowTexture", shadow_texture == NULL ? NULL : shadow_texture->get_finaltex());
 	curr_effect->set_int("ShadowTileMode", options->shadow_mask_tile_mode);
-	curr_effect->set_texture("DiffuseTexture", rt->prescale_texture[next_index]);
+	curr_effect->set_texture("DiffuseTexture", curr_texture->get_finaltex());
+
 	curr_effect->set_vector("BackColor", 3, back_color);
 	curr_effect->set_vector("ScreenScale", 2, screen_scale);
 	curr_effect->set_vector("ScreenOffset", 2, screen_offset);
@@ -1423,7 +1426,7 @@ int shaders::post_pass(d3d_render_target *rt, int source_index, poly_info *poly,
 	curr_effect->set_bool("PrepareVector", prepare_vector);
 
 	next_index = rt->next_index(next_index);
-	blit(prepare_bloom ? rt->native_target[next_index] : rt->prescale_target[next_index], true, poly->get_type(), vertnum, poly->get_count());
+	blit(backbuffer, true, poly->get_type(), vertnum, poly->get_count());
 
 	return next_index;
 }
@@ -1692,10 +1695,11 @@ void shaders::render_quad(poly_info *poly, int vertnum)
 			return;
 		}
 
-		cache_target *ct = find_cache_target(rt->screen_index, curr_texture->get_texinfo().width, curr_texture->get_texinfo().height);
+		//cache_target *ct = find_cache_target(rt->screen_index, curr_texture->get_texinfo().width, curr_texture->get_texinfo().height);
 
 		int next_index = 0;
 
+#if 0
 		next_index = ntsc_pass(rt, next_index, poly, vertnum);
 		next_index = color_convolution_pass(rt, next_index, poly, vertnum);
 		next_index = prescale_pass(rt, next_index, poly, vertnum);
@@ -1715,10 +1719,11 @@ void shaders::render_quad(poly_info *poly, int vertnum)
 		next_index = bloom_pass(rt, next_index, poly, vertnum);
 
 		next_index = distortion_pass(rt, next_index, poly, vertnum);
-
+#endif
+		
 		// render on screen
 		d3d->set_wrap(D3DTADDRESS_MIRROR);
-		next_index = screen_pass(rt, next_index, poly, vertnum);
+		next_index = post_pass(rt, next_index, poly, vertnum, false);
 		d3d->set_wrap(PRIMFLAG_GET_TEXWRAP(curr_texture->get_flags()) ? D3DTADDRESS_WRAP : D3DTADDRESS_CLAMP);
 
 		curr_texture->increment_frame_count();
