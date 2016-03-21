@@ -1,7 +1,26 @@
+# **MAME with faster HLSL pipeline** #
 
-# **MAME** #
+This branch is based off MAME 0.172 and has modifications done in the Direct3D HLSL renderer.
 
-[![Join the chat at https://gitter.im/mamedev/mame](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mamedev/mame?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+For each rendered frame, the default MAME HLSL pipeline has about 7 to 9 passes such as NTSC, color convolution, prescaling, phospor, bloom, etc... Disabling the effects though configuration does not prevent MAME from perfoming all those passes.
+
+These modifications disable all HLSL processing effects, while retaining effects such as scanline, pincushion, and shadowmasking effects contained in "hlsl/post.fx". This gets down the number of HLSL FX passes to just 1.
+
+This helps a lot on computers with low end graphics cards, while retaining the pincushion and scanline effects.
+
+Running MAME 0.172:
+```
+# mame gng -str 60 -nothrottle
+Average speed: 134.57% (59 seconds)
+```
+
+Running MAME 0.172 with faster HLSL pipeline:
+```
+# mame gng -str 60 -nothrottle
+Average speed: 542.78% (59 seconds)
+```
+
+===
 
 What is MAME?
 =============
