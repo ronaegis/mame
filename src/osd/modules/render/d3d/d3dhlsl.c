@@ -1058,12 +1058,14 @@ void shaders::begin_draw()
 
 	default_effect->set_technique("TestTechnique");
 	post_effect->set_technique("ScanMaskTechnique");
+#if 0
 	phosphor_effect->set_technique("TestTechnique");
 	focus_effect->set_technique("TestTechnique");
 	deconverge_effect->set_technique("DeconvergeTechnique");
 	color_effect->set_technique("ColorTechnique");
 	yiq_encode_effect->set_technique("EncodeTechnique");
 	yiq_decode_effect->set_technique("DecodeTechnique");
+#endif
 
 	HRESULT result = (*d3dintf->device.get_render_target)(d3d->get_device(), 0, &backbuffer);
 	if (result != D3D_OK) osd_printf_verbose("Direct3D: Error %08X during device get_render_target call\n", (int)result);
@@ -1596,12 +1598,11 @@ void shaders::screen_post_pass(render_target *rt, vec2f &texsize, vec2f &delta, 
 	curr_effect->update_uniforms();
 	curr_effect->set_texture("ShadowTexture", shadow_texture == NULL ? NULL : shadow_texture->get_finaltex());
 
-	curr_effect->set_texture("DiffuseTexture", rt->render_texture[0]);
+	curr_effect->set_texture("DiffuseTexture", curr_texture->get_finaltex());
 
 	d3d->set_wrap(D3DTADDRESS_MIRROR);
 
-	HRESULT result = (*d3dintf->device.set_render_target)(d3d->get_device(), 0, rt->target[2]);
-
+	HRESULT result = (*d3dintf->device.set_render_target)(d3d->get_device(), 0, backbuffer);
 	result = (*d3dintf->device.clear)(d3d->get_device(), 0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(1,0,0,0), 0, 0);
 	if (result != D3D_OK) osd_printf_verbose("Direct3D: Error %08X during device clear call\n", (int)result);
 
@@ -1736,11 +1737,12 @@ void shaders::render_quad(poly_info *poly, int vertnum)
 		{
 			return;
 		}
-		cache_target *ct = find_cache_target(rt->screen_index, curr_texture->get_texinfo().width, curr_texture->get_texinfo().height);
+		//cache_target *ct = find_cache_target(rt->screen_index, curr_texture->get_texinfo().width, curr_texture->get_texinfo().height);
 
 		vec2f& sourcedims = curr_texture->get_rawdims();
 		vec2f delta = curr_texture->get_uvstop() - curr_texture->get_uvstart();
 		vec2f texsize(rt->width, rt->height);
+#if 0
 		float defocus_x = options->defocus[0];
 		float defocus_y = options->defocus[1];
 		bool focus_enable = defocus_x != 0.0f || defocus_y != 0.0f;
@@ -1757,6 +1759,8 @@ void shaders::render_quad(poly_info *poly, int vertnum)
 		avi_post_pass(rt, texsize, delta, sourcedims, poly, vertnum);
 		screen_post_pass(rt, texsize, delta, sourcedims, poly, vertnum);
 		raster_bloom_pass(rt, texsize, delta, poly, vertnum);
+#endif
+		screen_post_pass(rt, texsize, delta, sourcedims, poly, vertnum);
 
 		curr_texture->increment_frame_count();
 		curr_texture->mask_frame_count(options->yiq_phase_count);

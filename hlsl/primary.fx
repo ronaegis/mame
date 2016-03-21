@@ -87,6 +87,6 @@ technique TestTechnique
 		//Sampler[0] = <DiffuseSampler>;
 
 		VertexShader = compile vs_2_0 vs_main();
-		PixelShader  = compile ps_2_0 ps_main();
+		//PixelShader  = compile ps_2_0 ps_main();
 	}
 }
