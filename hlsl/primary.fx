@@ -148,7 +148,7 @@ technique ScreenTechnique
 		Lighting = FALSE;
 
 		VertexShader = compile vs_2_0 vs_screen_main();
-		PixelShader  = compile ps_2_0 ps_screen_main();
+		//PixelShader  = compile ps_2_0 ps_screen_main();
 	}
 }
 
@@ -159,7 +159,7 @@ technique VectorBufferTechnique
 		Lighting = FALSE;
 
 		VertexShader = compile vs_2_0 vs_vector_buffer_main();
-		PixelShader  = compile ps_2_0 ps_vector_buffer_main();
+		//PixelShader  = compile ps_2_0 ps_vector_buffer_main();
 	}
 }
 
@@ -170,6 +170,6 @@ technique UiTechnique
 		Lighting = FALSE;
 
 		VertexShader = compile vs_2_0 vs_ui_main();
-		PixelShader  = compile ps_2_0 ps_ui_main();
+		//PixelShader  = compile ps_2_0 ps_ui_main();
 	}
 }
